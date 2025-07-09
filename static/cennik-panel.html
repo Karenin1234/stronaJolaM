@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administracyjny - Zarządzanie Cennikiem</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --primary-blue: #3b82f6;
+            --secondary-blue: #60a5fa;
+            --accent-blue: #93c5fd;
+            --text-light: #f8fafc;
+            --text-gray: #94a3b8;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-purple: #a855f7;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e293b;;
+            color: var(--text-light);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+
+         .card {
+            background-color: rgba(30, 41, 59, 0.8);
+            border-radius: 0.75rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .stat-card {
+            border-top: 4px solid var(--primary-blue);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-purple));
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(90deg, var(--accent-green), #059669);
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(90deg, var(--accent-red), #dc2626);
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background-color: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        tr {
+            border-bottom: 1px solid rgba(100, 116, 139, 0.2);
+        }
+
+        tr:hover {
+            background-color: rgba(51, 65, 85, 0.5);
+        }
+
+        .price-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .price-card:hover {
+            transform: scale(1.03);
+        }
+
+        .popular-tag {
+            position: absolute;
+            top: 15px;
+            right: -35px;
+            background: var(--accent-green);
+            color: white;
+            padding: 0.25rem 2.5rem;
+            transform: rotate(45deg);
+            font-size: 0.8rem;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 600px;
+            transform: translateY(30px);
+            transition: transform 0.4s ease;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--accent-blue);
+            font-weight: 500;
+        }
+
+        .form-control {
+            background-color: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: var(--text-light);
+            padding: 0.9rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        .feature-list {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 0.5rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .feature-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: rgba(51, 65, 85, 0.5);
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .feature-item:hover {
+            background: rgba(51, 65, 85, 0.7);
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+
+        .glow-text {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.7);
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, rgba(30, 41, 59, 0.5), rgba(51, 65, 85, 0.5), rgba(30, 41, 59, 0.5));
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 0.5rem;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+           <div id="sidebar-container"></div>
+
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto p-8">
+            <div class="mb-8 flex justify-between items-center">
+                <div>
+                    <h2 class="text-3xl font-bold mb-2 glow-text">Zarządzanie Cennikiem</h2>
+                    <p class="text-slate-400">Twórz, edytuj i zarządzaj ofertami</p>
+                </div>
+                <button id="add-offer-btn" class="btn-success px-6 py-3 rounded-xl flex items-center text-lg pulse">
+                    <i class="fas fa-plus mr-3"></i> Dodaj nową ofertę
+                </button>
+            </div>
+
+            <!-- Lista ofert -->
+            <div class="card p-6 mb-10">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="font-bold text-2xl glow-text">Lista Ofert</h3>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" placeholder="Szukaj oferty..." class="bg-slate-800 text-white px-4 py-2 rounded-xl w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left text-slate-400">
+                                <th class="pb-4 pr-6">ID</th>
+                                <th class="pb-4 pr-6">Nazwa oferty</th>
+                                <th class="pb-4 pr-6">Cena</th>
+                                <th class="pb-4 pr-6">Kategoria</th>
+                                <th class="pb-4 pr-6">Status</th>
+                                <th class="pb-4">Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody id="offers-table-body">
+                            <!-- Offers will be loaded dynamically -->
+                            <tr>
+                                <td colspan="6" class="text-center py-10">
+                                    <div class="flex justify-center">
+                                        <div class="skeleton w-10 h-10 rounded-full"></div>
+                                    </div>
+                                    <p class="mt-4 text-slate-400">Ładowanie ofert...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Podgląd ofert -->
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="font-bold text-2xl glow-text">Podgląd Cennika</h3>
+                    <p class="text-slate-400">Tak Twoje oferty będą wyglądać dla klientów</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="offers-preview">
+                    <!-- Offers preview will be loaded dynamically -->
+                    <div class="card price-card p-6">
+                        <div class="skeleton w-full h-8 mb-4"></div>
+                        <div class="skeleton w-1/2 h-6 mb-6"></div>
+                        <div class="space-y-3 mb-8">
+                            <div class="skeleton w-full h-4"></div>
+                            <div class="skeleton w-full h-4"></div>
+                            <div class="skeleton w-full h-4"></div>
+                        </div>
+                    </div>
+                    <div class="card price-card p-6">
+                        <div class="skeleton w-full h-8 mb-4"></div>
+                        <div class="skeleton w-1/2 h-6 mb-6"></div>
+                        <div class="space-y-3 mb-8">
+                            <div class="skeleton w-full h-4"></div>
+                            <div class="skeleton w-full h-4"></div>
+                            <div class="skeleton w-full h-4"></div>
+                        </div>
+                    </div>
+                    <div class="card price-card p-6">
+                        <div class="skeleton w-full h-8 mb-4"></div>
+                        <div class="skeleton w-1/2 h-6 mb-6"></div>
+                        <div class="space-y-3 mb-8">
+                            <div class="skeleton w-full h-4"></div>
+                            <div class="skeleton w-full h-4"></div>
+                            <div class="skeleton w-full h-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal do dodawania/edycji oferty -->
+    <div class="modal-overlay" id="offer-modal">
+        <div class="modal-content">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+                <h3 class="font-bold text-2xl" id="modal-title">Dodaj nową ofertę</h3>
+                <button id="close-modal" class="text-slate-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="form-group">
+                    <label class="form-label">Nazwa oferty</label>
+                    <input type="text" class="form-control" id="offer-name" placeholder="Np. Pakiet 10 treningów">
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 mb-6">
+                    <div class="form-group">
+                        <label class="form-label">Cena (zł)</label>
+                        <input type="number" class="form-control" id="offer-price" placeholder="Np. 1200">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 mb-6">
+                    <div class="form-group">
+                        <label class="form-label">Kategoria</label>
+                        <select class="form-control" id="offer-category">
+                            <option value="">Wybierz kategorię</option>
+                            <!-- Categories will be loaded dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Opis oferty</label>
+                    <textarea class="form-control" id="offer-description" rows="3" placeholder="Krótki opis oferty..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Cechy oferty</label>
+                    <div class="p-4 rounded-xl bg-slate-800/50">
+                        <div class="flex items-center mb-4">
+                            <input type="text" class="form-control mr-3" id="new-feature" placeholder="Dodaj nową cechę">
+                            <button id="add-feature-btn" class="btn-primary px-4 py-2.5 rounded-xl">
+                                <i class="fas fa-plus mr-2"></i> Dodaj
+                            </button>
+                        </div>
+                        <div class="feature-list" id="features-list">
+                            <!-- Features will be added here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 mb-6">
+                    <div class="form-group">
+                        <label class="form-label flex items-center">
+                            <input type="checkbox" class="w-5 h-5 mr-3 rounded bg-slate-700 border-slate-600" id="offer-active" checked>
+                            Oferta aktywna
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-slate-700 flex justify-end space-x-4">
+                <button id="cancel-offer-btn" class="px-5 py-2.5 rounded-xl border border-slate-600 hover:bg-slate-700 transition">Anuluj</button>
+                <button id="save-offer-btn" class="btn-success px-5 py-2.5 rounded-xl">Zapisz ofertę</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Global variables
+    let pricingData = { categories: [] };
+    let currentOffer = null;
+    let currentCategoryId = null;
+
+    // DOM elements
+    const modal = document.getElementById('offer-modal');
+    const addOfferBtn = document.getElementById('add-offer-btn');
+    const closeModalBtn = document.getElementById('close-modal');
+    const cancelOfferBtn = document.getElementById('cancel-offer-btn');
+    const saveOfferBtn = document.getElementById('save-offer-btn');
+    const addFeatureBtn = document.getElementById('add-feature-btn');
+    const featuresList = document.getElementById('features-list');
+    const offersTableBody = document.getElementById('offers-table-body');
+    const offersPreview = document.getElementById('offers-preview');
+    const categorySelect = document.getElementById('offer-category');
+
+    // Load sidebar
+    fetch("side-bar.html")
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById("sidebar-container").innerHTML = data;
+        })
+        .catch(error => console.error("Błąd wczytywania sidebaru:", error));
+
+    // Load pricing data
+    function loadPricingData() {
+        fetch('/api/pricing')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                pricingData = data;
+                renderOffersTable();
+                renderOffersPreview();
+                populateCategories();
+            })
+            .catch(error => {
+                console.error('Error loading pricing data:', error);
+                offersTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-10 text-red-400">
+                            <i class="fas fa-exclamation-triangle text-2xl mb-3"></i>
+                            <p>Błąd ładowania danych</p>
+                        </td>
+                    </tr>
+                `;
+            });
+    }
+
+    // Populate categories in select
+    function populateCategories() {
+        categorySelect.innerHTML = '<option value="">Wybierz kategorię</option>';
+
+        if (pricingData.categories && pricingData.categories.length > 0) {
+            pricingData.categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.title;
+                categorySelect.appendChild(option);
+            });
+        } else {
+            const option = document.createElement('option');
+            option.value = 'new';
+            option.textContent = '-- Dodaj nową kategorię --';
+            categorySelect.appendChild(option);
+        }
+    }
+
+    // Render offers table
+    function renderOffersTable() {
+        if (!pricingData.categories || pricingData.categories.length === 0 ||
+            pricingData.categories.every(c => !c.items || c.items.length === 0)) {
+            offersTableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center py-10">
+                        <i class="fas fa-box-open text-3xl mb-4 text-slate-400"></i>
+                        <p>Brak ofert w cenniku</p>
+                        <button id="add-first-offer" class="btn-primary mt-4 px-4 py-2 rounded-xl">
+                            Dodaj pierwszą ofertę
+                        </button>
+                    </td>
+                </tr>
+            `;
+            document.getElementById('add-first-offer').addEventListener('click', () => {
+                document.getElementById('add-offer-btn').click();
+            });
+            return;
+        }
+
+        offersTableBody.innerHTML = '';
+        pricingData.categories.forEach(category => {
+            if (category.items && category.items.length > 0) {
+                category.items.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-t border-slate-700 hover:bg-slate-800/50';
+                    row.innerHTML = `
+                        <td class="py-5 pr-6 font-mono">${item.id.slice(0, 8)}</td>
+                        <td class="py-5 pr-6 font-medium">${item.name}</td>
+                        <td class="py-5 pr-6">${item.price} zł</td>
+                        <td class="py-5 pr-6">${category.title}</td>
+                        <td class="py-5 pr-6"><span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full">Aktywna</span></td>
+                        <td class="py-5">
+                            <button class="edit-offer-btn mr-4 text-blue-400 hover:text-blue-300 text-lg" data-category="${category.id}" data-id="${item.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="delete-offer-btn text-red-400 hover:text-red-300 text-lg" data-category="${category.id}" data-id="${item.id}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    `;
+                    offersTableBody.appendChild(row);
+                });
+            }
+        });
+
+        // Add event listeners
+        document.querySelectorAll('.edit-offer-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const categoryId = btn.dataset.category;
+                const itemId = btn.dataset.id;
+                openEditModal(categoryId, itemId);
+            });
+        });
+
+        document.querySelectorAll('.delete-offer-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const categoryId = this.dataset.category;
+                const itemId = this.dataset.id;
+                const itemName = this.closest('tr').querySelector('td:nth-child(2)').textContent;
+                deleteOffer(categoryId, itemId, itemName);
+            });
+        });
+    }
+
+    // Render offers preview
+    function renderOffersPreview() {
+        if (!pricingData.categories || pricingData.categories.length === 0 ||
+            pricingData.categories.every(c => !c.items || c.items.length === 0)) {
+            offersPreview.innerHTML = `
+                <div class="col-span-3 text-center py-10 text-slate-400">
+                    <i class="fas fa-box-open text-3xl mb-4"></i>
+                    <p>Brak ofert do wyświetlenia</p>
+                </div>
+            `;
+            return;
+        }
+
+        offersPreview.innerHTML = '';
+        pricingData.categories.forEach(category => {
+            if (category.items && category.items.length > 0) {
+                category.items.forEach(item => {
+                    const offerCard = document.createElement('div');
+                    offerCard.className = 'card price-card p-6';
+                    offerCard.innerHTML = `
+                        <div class="mb-5">
+                            <h4 class="font-bold text-2xl mb-2">${item.name}</h4>
+                            <p class="text-slate-400">${category.description || ''}</p>
+                        </div>
+                        <div class="mb-6">
+                            <span class="text-4xl font-bold">${item.price} zł</span>
+                        </div>
+                        <ul class="space-y-3 mb-8">
+                            ${item.features.map(feature => `
+                                <li class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i>
+                                    <span>${feature}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                        <div class="flex justify-between border-t border-slate-700 pt-4">
+                            <span class="text-sm text-slate-400">ID: ${item.id.slice(0, 8)}</span>
+                            <span class="text-sm text-green-500">Aktywna</span>
+                        </div>
+                    `;
+                    offersPreview.appendChild(offerCard);
+                });
+            }
+        });
+    }
+
+    // Open edit modal
+    function openEditModal(categoryId, itemId) {
+        const category = pricingData.categories.find(c => c.id === categoryId);
+        if (!category) return;
+
+        const item = category.items.find(i => i.id === itemId);
+        if (!item) return;
+
+        currentOffer = item;
+        currentCategoryId = categoryId;
+
+        document.getElementById('modal-title').textContent = 'Edytuj ofertę';
+        document.getElementById('offer-name').value = item.name;
+        document.getElementById('offer-price').value = item.price;
+        document.getElementById('offer-description').value = item.description || '';
+        document.getElementById('offer-active').checked = true;
+        categorySelect.value = categoryId;
+
+        // Clear features and add current ones
+        featuresList.innerHTML = '';
+        if (item.features && item.features.length > 0) {
+            item.features.forEach(feature => {
+                addFeatureToUI(feature);
+            });
+        }
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Add feature to UI
+    function addFeatureToUI(featureText) {
+        const featureElement = document.createElement('div');
+        featureElement.className = 'feature-item';
+        featureElement.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                <span>${featureText}</span>
+            </div>
+            <button class="text-red-500 hover:text-red-300 delete-feature">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        featuresList.appendChild(featureElement);
+
+        // Add event listener to delete button
+        featureElement.querySelector('.delete-feature').addEventListener('click', () => {
+            featureElement.remove();
+        });
+    }
+
+    // Create new category
+    function createNewCategory() {
+        const categoryName = prompt('Podaj nazwę nowej kategorii:');
+        if (!categoryName) return null;
+
+        return fetch('/api/pricing', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: categoryName,
+                description: ''
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Failed to create category');
+        });
+    }
+
+    // Delete offer
+    function deleteOffer(categoryId, itemId, itemName) {
+        if (!confirm(`Czy na pewno chcesz usunąć ofertę "${itemName}"?`)) return;
+
+        fetch('/api/pricing/items', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ item_id: itemId })
+        })
+        .then(response => {
+            if (response.ok) {
+                // Remove from UI
+                const row = document.querySelector(`.delete-offer-btn[data-id="${itemId}"]`).closest('tr');
+                if (row) {
+                    row.style.transition = 'all 0.4s ease';
+                    row.style.opacity = '0';
+                    row.style.transform = 'translateX(50px)';
+
+                    setTimeout(() => {
+                        row.remove();
+                        // Reload data
+                        loadPricingData();
+                    }, 400);
+                }
+            } else {
+                alert('Błąd podczas usuwania oferty');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting offer:', error);
+            alert('Błąd podczas usuwania oferty');
+        });
+    }
+
+    // Save offer
+    function saveOffer() {
+        const offerName = document.getElementById('offer-name').value;
+        const offerPrice = document.getElementById('offer-price').value;
+        const offerDescription = document.getElementById('offer-description').value;
+        const categoryId = categorySelect.value;
+        const isActive = document.getElementById('offer-active').checked;
+
+        if (!offerName) {
+            alert('Proszę podać nazwę oferty');
+            return;
+        }
+
+        if (!offerPrice) {
+            alert('Proszę podać cenę oferty');
+            return;
+        }
+
+        if (!categoryId) {
+            alert('Proszę wybrać kategorię');
+            return;
+        }
+
+        // Get features
+        const features = [];
+        document.querySelectorAll('#features-list .feature-item').forEach(item => {
+            features.push(item.querySelector('span').textContent);
+        });
+
+        // If no categories exist and user selected "Add new category"
+        if (categoryId === 'new') {
+            createNewCategory()
+                .then(newCategory => {
+                    if (newCategory && newCategory.id) {
+                        // Save offer with the new category
+                        saveOfferToApi({
+                            name: offerName,
+                            price: parseFloat(offerPrice),
+                            description: offerDescription,
+                            features: features,
+                            category_id: newCategory.id
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error creating category:', error);
+                    alert('Błąd podczas tworzenia kategorii');
+                });
+            return;
+        }
+
+        // Normal save
+        saveOfferToApi({
+            name: offerName,
+            price: parseFloat(offerPrice),
+            description: offerDescription,
+            features: features,
+            category_id: categoryId,
+            item_id: currentOffer ? currentOffer.id : undefined
+        });
+    }
+
+    // Save offer to API
+    function saveOfferToApi(offerData) {
+        const isNew = !offerData.item_id;
+        const url = isNew ? '/api/pricing/items' : '/api/pricing';
+        const method = isNew ? 'POST' : 'PUT';
+
+        fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(offerData)
+        })
+        .then(response => {
+            if (response.ok) {
+                closeModal();
+                loadPricingData();
+            } else {
+                throw new Error('Failed to save offer');
+            }
+        })
+        .catch(error => {
+            console.error('Error saving offer:', error);
+            alert('Błąd podczas zapisywania oferty');
+        });
+    }
+
+    // Modal functionality
+    addOfferBtn.addEventListener('click', () => {
+        document.getElementById('modal-title').textContent = 'Dodaj nową ofertę';
+        document.getElementById('offer-name').value = '';
+        document.getElementById('offer-price').value = '';
+        document.getElementById('offer-description').value = '';
+        document.getElementById('offer-active').checked = true;
+        featuresList.innerHTML = '';
+        categorySelect.value = '';
+        currentOffer = null;
+        currentCategoryId = null;
+
+        // Refresh categories in case they were added
+        populateCategories();
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+
+    // Close modal
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelOfferBtn.addEventListener('click', closeModal);
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Add feature to offer
+    addFeatureBtn.addEventListener('click', () => {
+        const featureInput = document.getElementById('new-feature');
+        const featureText = featureInput.value.trim();
+
+        if (featureText) {
+            addFeatureToUI(featureText);
+            featureInput.value = '';
+        }
+    });
+
+    // Save offer button
+    saveOfferBtn.addEventListener('click', saveOffer);
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        loadPricingData();
+
+        // Allow pressing Enter in feature input to add feature
+        document.getElementById('new-feature').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addFeatureBtn.click();
+            }
+        });
+    });
+</script>
+</body>
+</html>
