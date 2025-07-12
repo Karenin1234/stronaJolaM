@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Biografia Jolanty Miszczak</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --color-bg: #0f172a;
+      --color-card: #1e293b;
+      --color-accent: #6366f1;
+      --color-primary: #60a5fa;
+      --color-text: #e0e7ff;
+      --color-light: #94a3b8;
+      --radius: 1rem;
+      --spacing: 1rem;
+      --transition: all 0.4s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #0f1117, var(--color-bg));
+      color: var(--color-light);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 0 var(--spacing);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Lora', serif;
+      color: var(--color-text);
+      font-weight: 700;
+    }
+
+    /* Sekcja 1: Biografia */
+    .bio-section {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 3rem;
+      padding: 5rem 0;
+      position: relative;
+    }
+
+    .bio-section::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      left: -100px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(96, 165, 250, 0.15), transparent 80%);
+      filter: blur(60px);
+      z-index: 0;
+    }
+
+    .bio-text {
+      flex: 1;
+      min-width: 300px;
+      position: relative;
+      z-index: 1;
+      padding: 2rem;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: var(--radius);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transform: translateY(30px);
+      opacity: 0;
+      animation: fadeInUp 0.8s forwards 0.2s;
+    }
+
+    .bio-text h1 {
+      font-size: 3.2rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      line-height: 1.1;
+      background: linear-gradient(to right, var(--color-text), var(--color-primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .bio-text h1::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: var(--color-accent);
+      margin-top: 1rem;
+      border-radius: 2px;
+    }
+
+    .bio-text p {
+      font-size: 1.125rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      padding-left: 1.5rem;
+      border-left: 2px solid var(--color-accent);
+    }
+
+    .bio-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .stat-item {
+      flex: 1;
+      min-width: 150px;
+      background: rgba(59, 130, 246, 0.1);
+      padding: 1.2rem;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid rgba(96, 165, 250, 0.2);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 0.5rem;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.95rem;
+      color: var(--color-light);
+    }
+
+    .bio-image {
+      flex: 1;
+      min-width: 300px;
+      text-align: center;
+      position: relative;
+      transform: translateY(30px);
+      opacity: 0;
+      animation: fadeInUp 0.8s forwards 0.4s;
+    }
+
+    .bio-image img {
+      width: 100%;
+      max-width: 500px;
+      border-radius: var(--radius);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      border: 5px solid rgba(255, 255, 255, 0.1);
+      transition: var(--transition);
+    }
+
+    .bio-image img:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 25px 50px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Sekcja 2: Certyfikat i Timeline */
+    .cert-section {
+      background: linear-gradient(135deg, rgba(24, 32, 51, 0.9), rgba(15, 23, 42, 0.9));
+      padding: 4rem 2rem;
+      border-radius: var(--radius);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+      margin-bottom: 4rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cert-section::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(96, 165, 250, 0.1), transparent 80%);
+      filter: blur(60px);
+      z-index: 0;
+    }
+
+    .cert-card {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 3rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cert-image {
+      flex: 1;
+      min-width: 250px;
+      text-align: center;
+    }
+
+    .cert-image img {
+      width: 100%;
+      max-width: 300px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--color-accent);
+      transition: var(--transition);
+    }
+
+    .cert-image img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+    }
+
+    .cert-info {
+      flex: 2;
+      min-width: 300px;
+    }
+
+    .cert-info h2 {
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+      color: var(--color-text);
+      position: relative;
+      display: inline-block;
+    }
+
+    .cert-info h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 50px;
+      height: 4px;
+      background: var(--color-accent);
+      border-radius: 2px;
+    }
+
+    .cert-info p {
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      max-width: 600px;
+    }
+
+    .badges {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: rgba(59, 130, 246, 0.1);
+      padding: 0.8rem 1.5rem;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+    }
+
+    .badge i {
+      color: var(--color-primary);
+    }
+
+    /* Timeline */
+    .timeline-container {
+      position: relative;
+      z-index: 1;
+      margin-top: 3rem;
+      padding-left: 2rem;
+    }
+
+    .timeline-title {
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+      color: var(--color-text);
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    .timeline-title::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 80%;
+      background: var(--color-accent);
+      border-radius: 3px;
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 2rem;
+      border-left: 2px dashed var(--color-accent);
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      top: 0;
+      width: 12px;
+      height: 12px;
+      background: var(--color-accent);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--color-accent);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2.5rem;
+      padding: 1.5rem;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: var(--radius);
+      transform: translateX(-30px);
+      opacity: 0;
+      transition: var(--transition);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -38px;
+      top: 1.5rem;
+      width: 24px;
+      height: 24px;
+      background: var(--color-bg);
+      border: 4px solid var(--color-accent);
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+      z-index: 1;
+    }
+
+    .timeline-item h3 {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .timeline-item h3 i {
+      color: var(--color-accent);
+    }
+
+    .timeline-item .year {
+      display: inline-block;
+      background: var(--color-accent);
+      color: white;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-item p {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* Filozofia */
+    .philosophy-section {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(24, 32, 51, 0.9));
+      padding: 4rem 2rem;
+      border-radius: var(--radius);
+      margin: 4rem 0;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .philosophy-section::before {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(96, 165, 250, 0.1), transparent 80%);
+      filter: blur(60px);
+      z-index: 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-header h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(to right, var(--color-text), var(--color-primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    .section-header p {
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 1.1rem;
+    }
+
+    .philosophy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .philosophy-card {
+      background: rgba(15, 23, 42, 0.6);
+      padding: 2rem;
+      border-radius: var(--radius);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      transition: var(--transition);
+      transform: translateY(30px);
+      opacity: 0;
+    }
+
+    .philosophy-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+      border-color: var(--color-accent);
+    }
+
+    .philosophy-card i {
+      font-size: 3rem;
+      color: var(--color-accent);
+      margin-bottom: 1.5rem;
+      background: rgba(99, 102, 241, 0.1);
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .philosophy-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--color-text);
+    }
+
+    .philosophy-card p {
+      font-size: 1rem;
+      color: var(--color-light);
+    }
+
+    /* Animacje */
+    @keyframes fadeInUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Responsywność */
+    @media (max-width: 992px) {
+      .bio-text h1 {
+        font-size: 2.5rem;
+      }
+
+      .bio-image {
+        min-width: 100%;
+      }
+
+      .cert-card {
+        flex-direction: column;
+      }
+
+      .cert-image {
+        min-width: 100%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .bio-text h1 {
+        font-size: 2.2rem;
+      }
+
+      .bio-text {
+        padding: 1.5rem;
+      }
+
+      .section-header h2 {
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .bio-text h1 {
+        font-size: 1.8rem;
+      }
+
+      .stat-item {
+        min-width: 100%;
+      }
+
+      .philosophy-card {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+  <!-- 2. Fetch + inicjalizacja menu -->
+  <script>
+    fetch("nav.html")
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById("nav-placeholder").innerHTML = html;
+        const btn = document.getElementById("menu-button");
+        const mobile = document.getElementById("mobile-menu");
+        btn.addEventListener("click", () => {
+          const open = btn.getAttribute("aria-expanded") === "true";
+          btn.setAttribute("aria-expanded", String(!open));
+          mobile.classList.toggle("show");
+        });
+      });
+  </script>
+
+
+  <div class="container">
+    <!-- Sekcja 1: Biografia -->
+    <section class="bio-section">
+      <div class="bio-text">
+        <h1>O biografii Jolanty Miszczak</h1>
+        <p></p>
+        <p>Tekst</p>
+
+        <div class="bio-stats">
+          <div class="stat-item">
+            <div class="stat-number">13+</div>
+            <div class="stat-label">Lat doświadczenia</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Zadowolonych klientów</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="bio-image">
+        <img src="https://i.postimg.cc/9F7YLhry/zdjecie3.jpg" alt="Jolanta Miszczak biografia" />
+      </div>
+    </section>
+
+    <!-- Sekcja 2: Certyfikat i historia kariery -->
+    <section class="cert-section">
+      <div class="cert-card">
+        <div class="cert-image">
+          <img src="zdjecia/certifikat.png" alt="Certyfikat trenerski" />
+        </div>
+
+        <div class="cert-info">
+          <h2>Certyfikat Trenera Personalnego</h2>
+          <div class="badges">
+            <div class="badge"><i class="fas fa-medal"></i> Międzynarodowy</div>
+            <div class="badge"><i class="fas fa-calendar"></i> Uzyskany: 9999</div>
+            <div class="badge"><i class="fas fa-star"></i> Akredytowany</div>
+          </div>
+          <p>Tekst .</p>
+        </div>
+      </div>
+
+      <div class="timeline-container">
+        <h2 class="timeline-title">Rozwój kariery</h2>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="year">2014</div>
+            <h3><i class="fas fa-play-circle"></i> Początki</h3>
+            <p>Tekst </p>
+          </div>
+
+          <div class="timeline-item">
+            <div class="year">2016</div>
+            <h3><i class="fas fa-laptop"></i> Rozwój Online</h3>
+            <p>Tekst </p>
+          </div>
+
+          <div class="timeline-item">
+            <div class="year">2019</div>
+            <h3><i class="fas fa-chalkboard-teacher"></i> Warsztaty </h3>
+            <p>Tekst </p>
+          </div>
+
+          <div class="timeline-item">
+            <div class="year">2023</div>
+            <h3><i class="fas fa-rocket"></i> Nowe Programy</h3>
+            <p>Tekst .</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sekcja filozofii -->
+    <section class="philosophy-section">
+      <div class="section-header">
+        <h2>Filozofia Pracy</h2>
+        <p>Tekst </p>
+      </div>
+
+      <div class="philosophy-grid">
+        <div class="philosophy-card">
+          <i class="fas fa-heart"></i>
+          <h3>Indywidualne Podejście</h3>
+          <p>Tekst </p>
+        </div>
+
+        <div class="philosophy-card">
+          <i class="fas fa-brain"></i>
+          <h3>Holistyczne Rozwiązania</h3>
+          <p>Tekst </p>
+        </div>
+
+        <div class="philosophy-card">
+          <i class="fas fa-chart-line"></i>
+          <h3>Długoterminowe Efekty</h3>
+          <p>Tekst </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Animacja elementów po załadowaniu strony
+      const timelineItems = document.querySelectorAll('.timeline-item');
+      const philosophyCards = document.querySelectorAll('.philosophy-card');
+
+      // Funkcja do animowania elementów przy przewijaniu
+      function animateOnScroll() {
+        timelineItems.forEach((item, index) => {
+          const position = item.getBoundingClientRect().top;
+          const screenPosition = window.innerHeight / 1.3;
+
+          if(position < screenPosition) {
+            setTimeout(() => {
+              item.style.transform = 'translateX(0)';
+              item.style.opacity = '1';
+            }, index * 200);
+          }
+        });
+
+        philosophyCards.forEach((card, index) => {
+          const position = card.getBoundingClientRect().top;
+          const screenPosition = window.innerHeight / 1.3;
+
+          if(position < screenPosition) {
+            setTimeout(() => {
+              card.style.transform = 'translateY(0)';
+              card.style.opacity = '1';
+            }, index * 200);
+          }
+        });
+      }
+
+      // Wywołanie przy ładowaniu i przewijaniu
+      window.addEventListener('scroll', animateOnScroll);
+      animateOnScroll();
+    });
+  </script>
+</body>
+</html>

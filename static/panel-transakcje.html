@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Transakcji</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+
+            --bg-primary: #1e293b;
+            --bg-secondary: #1e293b;
+            --accent: #3b82f6;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sidebar {
+            background-color: var(--bg-secondary);
+        }
+
+        .card {
+            background-color: var(--bg-secondary);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-completed {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .status-pending {
+            background-color: rgba(234, 179, 8, 0.15);
+            color: #eab308;
+        }
+
+        .status-failed {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .transaction-table th {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid #334155;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .transaction-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .transaction-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .transaction-table tr:hover {
+            background-color: rgba(30, 41, 59, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex">
+    <!-- Sidebar -->
+     <div id="sidebar-container"></div>
+
+    <script>
+      fetch("side-bar.html")
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById("sidebar-container").innerHTML = data;
+        })
+        .catch(error => console.error("Błąd wczytywania sidebaru:", error));
+    </script>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-8">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold">Transakcje</h1>
+                <p class="text-slate-400 mt-2">Zarządzaj wszystkimi transakcjami w systemie</p>
+            </div>
+            <div class="flex items-center">
+                <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Nowa transakcja
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="card p-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg text-slate-400">Wszystkie transakcje</h3>
+                        <p class="text-3xl font-bold mt-2" id="total-transactions">0</p>
+                    </div>
+                    <div class="bg-blue-500/20 p-3 rounded-full">
+                        <i class="fas fa-shopping-cart text-blue-400 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg text-slate-400">Całkowita wartość</h3>
+                        <p class="text-3xl font-bold mt-2" id="total-value">0 zł</p>
+                    </div>
+                    <div class="bg-green-500/20 p-3 rounded-full">
+                        <i class="fas fa-money-bill-wave text-green-400 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg text-slate-400">Średnia transakcja</h3>
+                        <p class="text-3xl font-bold mt-2" id="average-transaction">0 zł</p>
+                    </div>
+                    <div class="bg-purple-500/20 p-3 rounded-full">
+                        <i class="fas fa-chart-line text-purple-400 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Actions -->
+        <div class="card p-6 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold">Filtruj transakcje</h3>
+                </div>
+                <div class="flex flex-wrap gap-4">
+                    <div class="flex items-center">
+                        <label class="mr-2 text-slate-400">Status:</label>
+                        <select id="status-filter" class="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+                            <option value="all">Wszystkie</option>
+                            <option value="completed">Zakończone</option>
+                            <option value="pending">Oczekujące</option>
+                            <option value="failed">Nieudane</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center">
+                        <label class="mr-2 text-slate-400">Data:</label>
+                        <input type="date" id="date-filter" class="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+                    </div>
+
+                    <div class="flex items-center">
+                        <label class="mr-2 text-slate-400">Szukaj:</label>
+                        <input type="text" id="search-filter" placeholder="ID, klient, produkt..." class="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 w-48">
+                    </div>
+
+                    <button id="apply-filters" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                        Zastosuj
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="card p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold">Lista transakcji</h3>
+                <div class="flex items-center">
+                    <span class="text-slate-400 mr-4" id="showing-count">Pokazano 0 z 0</span>
+                    <button id="refresh-transactions" class="bg-slate-700 hover:bg-slate-600 p-2 rounded-lg">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Data</th>
+                            <th>Klient</th>
+                            <th>Produkty</th>
+                            <th>Wartość</th>
+                            <th>Status</th>
+                            <th>Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-body">
+                        <!-- Transactions will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center mt-6">
+                <div class="text-slate-400" id="table-info">Pokazano 0 transakcji</div>
+                <div class="flex space-x-2">
+                    <button id="prev-page" class="bg-slate-700 hover:bg-slate-600 p-2 rounded-lg disabled:opacity-50" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="next-page" class="bg-slate-700 hover:bg-slate-600 p-2 rounded-lg disabled:opacity-50" disabled>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Detail Modal -->
+    <div id="transaction-modal" class="modal-overlay hidden">
+        <div class="bg-slate-800 rounded-lg w-11/12 md:w-3/4 lg:w-1/2 max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold">Szczegóły transakcji</h3>
+                    <button id="close-modal" class="text-slate-400 hover:text-white text-2xl">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div id="transaction-detail-content">
+                    <!-- Transaction details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <script>
+  // --- Konfiguracja ---
+  const itemsPerPage = 10;
+
+  // --- Elementy DOM ---
+  const tbody = document.getElementById('transactions-body');
+  const totalCountEl = document.getElementById('total-transactions');
+  const totalValueEl = document.getElementById('total-value');
+  const avgValueEl = document.getElementById('average-transaction');
+  const dateFilterEl = document.getElementById('date-filter');
+  const searchFilterEl = document.getElementById('search-filter');
+  const applyFiltersBtn = document.getElementById('apply-filters');
+  const refreshBtn = document.getElementById('refresh-transactions');
+  const prevBtn = document.getElementById('prev-page');
+  const nextBtn = document.getElementById('next-page');
+  const pageInfoEl = document.getElementById('table-info');
+
+  // --- Stan aplikacji ---
+  let allTx = [];
+  let filteredTx = [];
+  let currentPage = 1;
+
+  // --- Inicjalizacja ---
+  document.addEventListener('DOMContentLoaded', () => {
+    // Ustaw domyślną datę (dzisiejsza) w filtrze
+    dateFilterEl.value = new Date().toISOString().split('T')[0];
+    // Załaduj dane
+    loadTransactions();
+    // Podłącz zdarzenia
+    applyFiltersBtn.addEventListener('click', () => { currentPage = 1; applyFilters(); });
+    refreshBtn.addEventListener('click', () => { currentPage = 1; loadTransactions(); });
+    prevBtn.addEventListener('click', () => changePage(-1));
+    nextBtn.addEventListener('click', () => changePage(1));
+  });
+
+  // --- Funkcja ładująca dane z backendu ---
+  async function loadTransactions() {
+    tbody.innerHTML = `
+      <tr><td colspan="7" class="py-8 text-center">
+        <i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i>
+        <div>Ładowanie transakcji...</div>
+      </td></tr>`;
+    try {
+      const res = await fetch('/api/transactions');
+      if (!res.ok) throw new Error(res.statusText);
+      allTx = await res.json();
+      applyFilters();
+      updateStats();
+    } catch (err) {
+      console.error(err);
+      tbody.innerHTML = `
+        <tr><td colspan="7" class="py-8 text-center text-red-400">
+          <i class="fas fa-exclamation-triangle"></i>
+          Błąd wczytywania: ${err.message}
+        </td></tr>`;
+    }
+  }
+
+  // --- Filtracja danych ---
+  function applyFilters() {
+    const dateVal = dateFilterEl.value;
+    const searchVal = searchFilterEl.value.trim().toLowerCase();
+
+    filteredTx = allTx.filter(tx => {
+      const matchDate = dateVal ? tx.purchase_date === dateVal : true;
+      const matchSearch = searchVal
+        ? (`${tx.first_name} ${tx.last_name} ${tx.email}`)
+            .toLowerCase()
+            .includes(searchVal)
+        : true;
+      return matchDate && matchSearch;
+    });
+
+    renderTable();
+    updateStats();
+  }
+
+  // --- Render tabeli ---
+  function renderTable() {
+    if (!filteredTx.length) {
+      tbody.innerHTML = `
+        <tr><td colspan="7" class="py-8 text-center text-slate-400">
+          Brak transakcji.
+        </td></tr>`;
+      pageInfoEl.textContent = '';
+      prevBtn.disabled = nextBtn.disabled = true;
+      return;
+    }
+
+    const totalPages = Math.ceil(filteredTx.length / itemsPerPage);
+    currentPage = Math.min(Math.max(1, currentPage), totalPages);
+    const start = (currentPage - 1) * itemsPerPage;
+    const pageTx = filteredTx.slice(start, start + itemsPerPage);
+
+    tbody.innerHTML = pageTx.map(tx => {
+      const date = new Date(tx.purchase_date).toLocaleDateString('pl-PL');
+      const name = `${tx.first_name} ${tx.last_name}`;
+      const comment = tx.comment || '-';
+      return `
+        <tr>
+          <td>${date}</td>
+          <td>${name}</td>
+          <td>${tx.email}</td>
+          <td>${tx.phone}</td>
+          <td>${tx.offer_id}</td>
+          <td>${parseFloat(tx.price).toFixed(2)} zł</td>
+          <td>${comment}</td>
+        </tr>`;
+    }).join('');
+
+    pageInfoEl.textContent = `Strona ${currentPage} / ${totalPages}`;
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === totalPages;
+  }
+
+  // --- Zarządzanie paginacją ---
+  function changePage(offset) {
+    currentPage += offset;
+    renderTable();
+  }
+
+  // --- Obliczanie i wyświetlanie statystyk ---
+  function updateStats() {
+    const tx = filteredTx.length ? filteredTx : allTx;
+    const count = tx.length;
+    const total = tx.reduce((sum, t) => sum + parseFloat(t.price), 0);
+    const avg = count ? (total / count) : 0;
+
+    totalCountEl.textContent = count;
+    totalValueEl.textContent = total.toFixed(2) + ' zł';
+    avgValueEl.textContent = avg.toFixed(2) + ' zł';
+  }
+
+
+</script>
+
+</body>
+</html>

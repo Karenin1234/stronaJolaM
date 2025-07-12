@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pasek nawigacji</title>
+
+  <!-- Ikony: Ionicons + Font Awesome -->
+  <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --primary: #0d0d0d;
+      --secondary: #1a1a1a;
+      --accent: #e63946;
+      --text: #f1faee;
+      --text-secondary: #a8dadc;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 3rem;
+      background-color: var(--secondary);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      position: relative;
+      z-index: 1000;
+    }
+
+    .logo {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .logo-name span {
+      color: var(--accent);
+    }
+
+    .logo-title {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      margin-top: 0.2rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+
+    .nav-links li {
+      position: relative;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-links a::before {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::before {
+      width: 100%;
+    }
+
+    .lock-icon-nav i {
+      font-size: 1.2rem;
+      color: #a8dadc;
+      transition: color 0.3s ease, background-color 0.3s ease;
+      padding: 0.5rem;
+      border-radius: 50%;
+    }
+
+    .lock-icon-nav:hover i {
+      color: #3b82f6;
+      background-color: #e0e7ff;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 2rem;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .mobile-menu-btn[aria-expanded="true"] ion-icon {
+      transform: rotate(90deg);
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 1rem 1.5rem;
+      }
+
+      .nav-links {
+        position: fixed;
+        top: 70px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 70px);
+        background-color: var(--secondary);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        transition: left 0.4s ease;
+      }
+
+      .nav-links.active {
+        left: 0;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .logo-name {
+        font-size: 1.3rem;
+      }
+
+      .logo-title {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <!-- Logo -->
+    <div class="logo">
+      <div class="logo-name">Jolanta <span>Miszczak</span></div>
+      <div  class="logo-title">Trener Personalny</div>
+    </div>
+
+    <!-- Linki -->
+    <ul class="nav-links" id="navLinks">
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="biografia.html">O mnie</a></li>
+      <li><a href="metamorfozy.html">Metamorfozy</a></li>
+      <li><a href="strona.html#contact">Kontakt</a></li>
+      <li><a href="cennik.html">Cennik</a></li>
+      <li>
+        <a class="lock-icon-nav" href="login.html" aria-label="Panel administratora" title="Panel administratora">
+          <i class="fas fa-lock"></i>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Przycisk mobilny -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu" aria-expanded="false">
+      <ion-icon name="menu"></ion-icon>
+    </button>
+  </nav>
+
+  <script>
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navLinks = document.getElementById('navLinks');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      const isActive = navLinks.classList.toggle('active');
+      mobileMenuBtn.setAttribute('aria-expanded', isActive);
+    });
+
+    // Zamknij menu po kliknięciu linku
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        mobileMenuBtn.setAttribute('aria-expanded', false);
+      });
+    });
+
+    // Opcjonalnie: zamknij po kliknięciu poza menu
+    document.addEventListener('click', e => {
+      if (!navLinks.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+        navLinks.classList.remove('active');
+        mobileMenuBtn.setAttribute('aria-expanded', false);
+      }
+    });
+  </script>
+</body>
+</html>
+

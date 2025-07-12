@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polityka Prywatności | Cookies</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --darker: #0f172a;
+            --light: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, #0c1120 100%);
+            color: var(--light);
+            line-height: 1.7;
+            scroll-behavior: smooth;
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .section-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.25);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .highlight {
+            background: linear-gradient(90deg, rgba(79, 70, 229, 0.15), transparent);
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .cookie-banner {
+            animation: slideUp 0.5s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .scroll-top {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 12px rgba(99, 102, 241, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+            }
+        }
+
+        .glow-text {
+            text-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+        }
+
+        .policy-icon {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .contact-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .gradient-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            transition: all 0.3s ease;
+        }
+
+        .gradient-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.4);
+        }
+
+        .footer-link {
+            position: relative;
+            padding-left: 24px;
+        }
+
+        .footer-link i {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .footer-link:hover i {
+            transform: translateY(-50%) translateX(5px);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Floating back to top button -->
+    <button id="scrollTop" class="fixed hidden bottom-8 right-8 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg scroll-top z-50" aria-label="Przewiń do góry">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Navigation -->
+    <nav class="bg-gray-900/90 backdrop-blur-md border-b border-gray-800 py-4 fixed w-full z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="#" class="text-2xl font-bold text-white flex items-center">
+                        <i class="fas fa-shield-alt text-indigo-400 mr-2"></i>
+                        Privacy<span class="text-indigo-400">Guard</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#privacy" class="text-gray-300 hover:text-white nav-link">Polityka Prywatności</a>
+                    <a href="#cookies" class="text-gray-300 hover:text-white nav-link">Cookies</a>
+                    <a href="#contact" class="text-gray-300 hover:text-white nav-link">Kontakt</a>
+                    <a href="#" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg transition duration-300">Zaloguj się</a>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden text-gray-300">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative bg-gradient-to-br from-gray-900 to-indigo-900/40 pt-32 pb-20 overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-20">
+            <div class="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgNjAwIDYwMCI+PHBhdGggZD0iTTAgMzAwQzAgMTM0LjMgMTM0LjMgMCAzMDAgMHMzMDAgMTM0LjMgMzAwIDMwMC0xMzQuMyAzMDAtMzAwIDMwMFMwIDQ2NS43IDAgMzAwWiIgc3Ryb2tlPSIjZjBmNmZmIiBzdHJva2Utd2lkdGg9IjAuNSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPjwvc3ZnPg==')]"></div>
+        </div>
+        <div class="absolute top-0 left-0 w-full h-full">
+            <div class="absolute top-20 left-1/4 w-64 h-64 bg-indigo-500/10 rounded-full filter blur-3xl"></div>
+            <div class="absolute bottom-10 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full filter blur-3xl"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
+                    Polityka <span class="text-indigo-400 glow-text">Prywatności</span>
+                </h1>
+                <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
+                    Dowiedz się, jak chronimy Twoje dane osobowe i wykorzystujemy pliki cookies w naszym systemie.
+                </p>
+                <div class="mt-10 flex justify-center gap-4">
+                    <a href="#privacy" class="gradient-btn text-white font-bold py-3 px-6 rounded-lg">Polityka Prywatności</a>
+                    <a href="#cookies" class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg border border-gray-700">Polityka Cookies</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+        <!-- Privacy Policy Section -->
+        <section id="privacy" class="pt-8">
+            <div class="section-card rounded-xl p-8">
+                <div class="flex items-center space-x-4 mb-8">
+                    <div class="policy-icon">
+                        <i class="fas fa-lock text-white"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white">Polityka Prywatności</h2>
+                </div>
+
+                <div class="space-y-8">
+                    <div class="highlight">
+                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-info-circle mr-2 text-indigo-400"></i> Wprowadzenie
+                        </h3>
+                        <p class="text-gray-300">
+                            Dbamy o ochronę Twojej prywatności i zobowiązujemy się do ochrony Twoich danych osobowych. Niniejsza polityka prywatności wyjaśnia, w jaki sposób zbieramy, wykorzystujemy i chronimy Twoje dane osobowe w związku z korzystaniem z naszej platformy i systemu logowania.
+                        </p>
+                    </div>
+
+                    <div class="highlight">
+                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-database mr-2 text-indigo-400"></i> Jakie dane zbieramy
+                        </h3>
+                        <p class="text-gray-300 mb-2">W naszym systemie zbieramy następujące rodzaje danych:</p>
+                        <ul class="list-disc pl-6 space-y-2 text-gray-300">
+                            <li><span class="text-indigo-300 font-medium">Dane rejestracyjne:</span> imię i nazwisko, adres e-mail, numer telefonu podczas tworzenia konta</li>
+                            <li><span class="text-indigo-300 font-medium">Dane logowania:</span> adres IP, data i godzina logowania, informacje o urządzeniu</li>
+                            <li><span class="text-indigo-300 font-medium">Dane płatności:</span> w przypadku usług premium (przechowywane szyfrowane)</li>
+                            <li><span class="text-indigo-300 font-medium">Dane kontaktowe:</span> gdy korzystasz z formularza kontaktowego</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight">
+                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-cogs mr-2 text-indigo-400"></i> W jaki sposób wykorzystujemy Twoje dane
+                        </h3>
+                        <p class="text-gray-300 mb-2">Twoje dane wykorzystujemy w następujących celach:</p>
+                        <ul class="list-disc pl-6 space-y-2 text-gray-300">
+                            <li><span class="text-indigo-300 font-medium">Świadczenie usług:</span> umożliwienie logowania, korzystania z funkcji systemu</li>
+                            <li><span class="text-indigo-300 font-medium">Bezpieczeństwo:</span> wykrywanie i zapobieganie nadużyciom, weryfikacja tożsamości</li>
+
+                            <li><span class="text-indigo-300 font-medium">Komunikacja:</span> wysyłanie powiadomień systemowych, odpowiedzi na zapytania</li>
+                            <li><span class="text-indigo-300 font-medium">Rozwój usług:</span> analiza użycia systemu w celu ulepszania funkcjonalności</li>
+                        </ul>
+                    </div>
+
+
+
+                    <div class="highlight">
+                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-user-shield mr-2 text-indigo-400"></i> Twoje prawa
+                        </h3>
+                        <p class="text-gray-300 mb-2">Zgodnie z RODO masz prawo do:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div class="bg-gray-800/50 p-4 rounded-lg">
+                                <i class="fas fa-eye text-indigo-400 mb-2"></i>
+                                <h4 class="font-semibold text-white">Dostępu do danych</h4>
+                                <p class="text-gray-300 text-sm mt-1">Możesz zażądać kopii swoich danych osobowych</p>
+                            </div>
+                            <div class="bg-gray-800/50 p-4 rounded-lg">
+                                <i class="fas fa-edit text-indigo-400 mb-2"></i>
+                                <h4 class="font-semibold text-white">Sprostowania</h4>
+                                <p class="text-gray-300 text-sm mt-1">Możesz żądać poprawienia nieprawidłowych danych</p>
+                            </div>
+                            <div class="bg-gray-800/50 p-4 rounded-lg">
+                                <i class="fas fa-trash-alt text-indigo-400 mb-2"></i>
+                                <h4 class="font-semibold text-white">Usunięcia ("prawo do bycia zapomnianym")</h4>
+                                <p class="text-gray-300 text-sm mt-1">Możesz zażądać usunięcia swoich danych</p>
+                            </div>
+                            <div class="bg-gray-800/50 p-4 rounded-lg">
+                                <i class="fas fa-ban text-indigo-400 mb-2"></i>
+                                <h4 class="font-semibold text-white">Sprzeciwu</h4>
+                                <p class="text-gray-300 text-sm mt-1">Możesz sprzeciwić się przetwarzaniu danych</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cookies Section -->
+        <section id="cookies" class="pt-8">
+            <div class="section-card rounded-xl p-8">
+                <div class="flex items-center space-x-4 mb-8">
+                    <div class="policy-icon">
+                        <i class="fas fa-cookie-bite text-white"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white">Polityka Cookies</h2>
+                </div>
+
+                <div class="space-y-8">
+                    <div class="highlight">
+                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-info-circle mr-2 text-indigo-400"></i> Czym są pliki cookies?
+                        </h3>
+                        <p class="text-gray-300">
+                            Pliki cookies to małe pliki tekstowe przechowywane na Twoim urządzeniu podczas korzystania z naszej platformy. Są niezbędne dla prawidłowego funkcjonowania systemu logowania i personalizacji doświadczeń użytkownika.
+                        </p>
+                    </div>
+
+                    <div class="highlight">
+                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-cookie mr-2 text-indigo-400"></i> Jak używamy cookies w naszym systemie?
+                        </h3>
+                        <div class="overflow-x-auto mt-4">
+                            <table class="min-w-full divide-y divide-gray-700">
+                                <thead class="bg-gray-800">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Typ cookie</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Cel</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Przykłady</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Czas życia</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-gray-900/50 divide-y divide-gray-700">
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-indigo-400 font-medium">Niezbędne</td>
+                                        <td class="px-6 py-4 text-sm text-gray-300">Funkcjonalność systemu</td>
+                                        <td class="px-6 py-4 text-sm text-gray-300">Autoryzacja, sesja użytkownika</td>
+                                        <td class="px-6 py-4 text-sm text-gray-300">Sesja przeglądarki</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-indigo-400 font-medium">Wydajnościowe</td>
+                                        <td class="px-6 py-4 text-sm text-gray-300">Analityka systemu</td>
+                                        <td class="px-6 py-4 text-sm text-gray-300">Statystyki</td>
+                                        <td class="px-6 py-4 text-sm text-gray-300">Do 2 lat</td>
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="highlight">
+                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-sliders-h mr-2 text-indigo-400"></i> Jak zarządzać cookies?
+                        </h3>
+                        <p class="text-gray-300">
+                            Możesz kontrolować ustawienia cookies bezpośrednio w swojej przeglądarce. Pamiętaj, że wyłączenie niektórych plików cookies może wpłynąć na funkcjonalność systemu logowania i niektórych funkcji naszej platformy.
+                        </p>
+                        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <a href="#" class="contact-card p-4 text-center">
+                                <i class="fab fa-chrome text-3xl text-indigo-400 mb-3"></i>
+                                <h4 class="font-semibold text-white">Google Chrome</h4>
+                                <p class="text-gray-300 text-sm mt-2">Ustawienia → Prywatność i bezpieczeństwo → Pliki cookie</p>
+                            </a>
+                            <a href="#" class="contact-card p-4 text-center">
+                                <i class="fab fa-firefox text-3xl text-indigo-400 mb-3"></i>
+                                <h4 class="font-semibold text-white">Mozilla Firefox</h4>
+                                <p class="text-gray-300 text-sm mt-2">Opcje → Prywatność i bezpieczeństwo → Pliki cookie</p>
+                            </a>
+                            <a href="#" class="contact-card p-4 text-center">
+                                <i class="fab fa-safari text-3xl text-indigo-400 mb-3"></i>
+                                <h4 class="font-semibold text-white">Apple Safari</h4>
+                                <p class="text-gray-300 text-sm mt-2">Preferencje → Prywatność → Zarządzaj danymi witryn</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="pt-8">
+            <div class="section-card rounded-xl p-8">
+                <div class="flex items-center space-x-4 mb-8">
+                    <div class="policy-icon">
+                        <i class="fas fa-envelope text-white"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white">Kontakt w sprawie danych</h2>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold text-white mb-6">Skontaktuj się z nami</h3>
+                        <p class="text-gray-300 mb-6">
+                            Jeśli masz pytania dotyczące naszej polityki prywatności, przetwarzania Twoich danych lub chcesz skorzystać ze swoich praw, skontaktuj się z naszym Inspektorem Ochrony Danych.
+                        </p>
+
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-user-tie text-indigo-400 mt-1 mr-4 text-xl"></i>
+                                <div>
+                                    <h4 class="font-semibold text-white">Operator strony</h4>
+                                    <p class="text-gray-300">Jeremi Żywicki</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-envelope text-indigo-400 mt-1 mr-4 text-xl"></i>
+                                <div>
+                                    <h4 class="font-semibold text-white">Email</h4>
+                                    <p class="text-gray-300">TechnikAdminJM@proton.me</p>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-semibold text-white mb-6">Wyślij zapytanie</h3>
+                        <form class="space-y-4">
+                            <div>
+                                <label class="block text-gray-300 mb-2">Imię i nazwisko</label>
+                                <input type="text" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white" placeholder="Jan Kowalski">
+                            </div>
+                            <div>
+                                <label class="block text-gray-300 mb-2">Adres email</label>
+                                <input type="email" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white" placeholder="jan@example.com">
+                            </div>
+                            <div>
+                                <label class="block text-gray-300 mb-2">Temat zapytania</label>
+                                <select class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white">
+                                    <option>Dostęp do danych</option>
+                                    <option>Sprostowanie danych</option>
+                                    <option>Usunięcie danych</option>
+                                    <option>Inne pytanie</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-300 mb-2">Wiadomość</label>
+                                <textarea rows="4" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white" placeholder="Twoja wiadomość..."></textarea>
+                            </div>
+                            <div class="pt-2">
+                                <button type="submit" class="gradient-btn text-white font-bold py-3 px-6 rounded-lg w-full">Wyślij zapytanie</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900/80 border-t border-gray-800 pt-12 pb-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-4">PrivacyGuard</h3>
+                    <p class="text-gray-400 mb-4">
+                        Zapewniamy najwyższe standardy ochrony danych osobowych i prywatności w naszych systemach.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Polityki</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#privacy" class="footer-link text-gray-400 hover:text-white"><i class="fas fa-chevron-right text-xs"></i> Polityka Prywatności</a></li>
+                        <li><a href="#cookies" class="footer-link text-gray-400 hover:text-white"><i class="fas fa-chevron-right text-xs"></i> Polityka Cookies</a></li>
+                        <li><a href="#" class="footer-link text-gray-400 hover:text-white"><i class="fas fa-chevron-right text-xs"></i> Regulamin usługi</a></li>
+                        <li><a href="#" class="footer-link text-gray-400 hover:text-white"><i class="fas fa-chevron-right text-xs"></i> Zasady bezpieczeństwa</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Przydatne linki</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="footer-link text-gray-400 hover:text-white"><i class="fas fa-chevron-right text-xs"></i> Strona główna</a></li>
+                        <li><a href="#" class="footer-link text-gray-400 hover:text-white"><i class="fas fa-chevron-right text-xs"></i> O nas</a></li>
+                        <li><a href="#" class="footer-link text-gray-400 hover:text-white"><i class="fas fa-chevron-right text-xs"></i> Usługi</a></li>
+                        <li><a href="#contact" class="footer-link text-gray-400 hover:text-white"><i class="fas fa-chevron-right text-xs"></i> Kontakt</a></li>
+                    </ul>
+                </div>
+
+
+            </div>
+
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center">
+                <p class="text-gray-500 text-sm">
+                    &copy; 2023 PrivacyGuard. Wszelkie prawa zastrzeżone.
+                </p>
+                <p class="text-gray-600 text-xs mt-2">
+                    Ostatnia aktualizacja: 15 lipca 2023
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll to top button
+        const scrollButton = document.getElementById('scrollTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollButton.classList.remove('hidden');
+            } else {
+                scrollButton.classList.add('hidden');
+            }
+        });
+
+        scrollButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

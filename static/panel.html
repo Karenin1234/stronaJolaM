@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administratora - Trener Personalny</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --primary-blue: #3b82f6;
+            --secondary-blue: #60a5fa;
+            --accent-blue: #93c5fd;
+            --text-light: #f8fafc;
+            --text-gray: #94a3b8;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(59, 130, 246, 0.2);
+            transform: translateX(4px);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-blue);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            background-color: #1e293b;
+            border-radius: 0.75rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card {
+            border-left: 4px solid var(--primary-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 60px 60px 0;
+            border-color: transparent rgba(59, 130, 246, 0.1) transparent transparent;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px 0 rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+        }
+
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #3b82f6 #1e293b;
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background-color: #3b82f6;
+            border-radius: 10px;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background-color: #1e293b;
+            z-index: 10;
+            box-shadow: 0 2px 0 0 #334155;
+        }
+
+        td {
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(30, 41, 59, 0.5);
+        }
+
+        tr:hover {
+            background-color: #334155;
+        }
+
+        .editor-toolbar {
+            background-color: #1e293b;
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+
+        .editor-content {
+            min-height: 300px;
+            background-color: #1e293b;
+            border-radius: 0 0 0.75rem 0.75rem;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeOut 0.2s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .price-input {
+            background-color: #334155;
+            border: 1px solid #475569;
+            transition: all 0.2s ease;
+        }
+
+        .price-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        .ip-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            margin-right: 0.25rem;
+            margin-bottom: 0.25rem;
+            font-family: 'Fira Code', monospace;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            margin: 2rem auto;
+            position: relative;
+            background-color: #1e293b;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        #countryChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .container-kraje h1 {
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: #f8fafc;
+            position: relative;
+            display: inline-block;
+        }
+
+        .container-kraje h1::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border-radius: 3px;
+        }
+
+        .loading {
+            color: #60a5fa;
+            font-size: 1.125rem;
+            margin: 2.5rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -0.25rem;
+            right: -0.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: #ef4444;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 1px 3px 0 rgba(239, 68, 68, 0.3);
+        }
+
+        .country-flag {
+            display: inline-block;
+            width: 1.25rem;
+            height: 0.9rem;
+            background-size: cover;
+            background-position: center;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+            border-radius: 2px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-input {
+            background-color: #334155;
+            border: 1px solid #475569;
+            transition: all 0.2s ease;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        .select-dropdown {
+            background-color: #334155;
+            border: 1px solid #475569;
+            color: #f8fafc;
+            padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2394a3b8'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.25rem;
+        }
+
+        .select-dropdown:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            z-index: 20;
+            background-color: #1e293b;
+            color: #f8fafc;
+            text-align: center;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            width: max-content;
+            max-width: 300px;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%) translateY(5px);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            border: 1px solid #334155;
+        }
+
+        .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="flex">
+    <!-- Sidebar loaded via JS -->
+    <div id="sidebar-container"></div>
+
+    <script>
+      fetch("side-bar.html")
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById("sidebar-container").innerHTML = data;
+        })
+        .catch(error => console.error("Błąd wczytywania sidebaru:", error));
+    </script>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto p-8 bg-slate-800">
+        <div class="mb-8 flex justify-between items-center">
+
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="card stat-card p-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-slate-400 mb-1">Odwiedziny dzisiaj</p>
+                            <h3 class="text-2xl font-bold" id="today-visits"></h3>
+                        </div>
+                        <i class="fas fa-users text-3xl text-blue-500 opacity-20"></i>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-sm" id="today-change"><i class="fas fa-circle-notch fa-spin mr-1"></i> </p>
+                    </div>
+                </div>
+
+                <div class="card stat-card p-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-slate-400 mb-1">Nowi klienci</p>
+                            <h3 class="text-2xl font-bold">0</h3>
+                        </div>
+                        <i class="fas fa-user-plus text-3xl text-green-500 opacity-20"></i>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-sm text-green-400"><i class="fas fa-arrow-up mr-1"></i> 20% od wczoraj</p>
+                    </div>
+                </div>
+
+                <div class="card stat-card p-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-slate-400 mb-1">Dzisiejsze transakcje</p>
+                            <h3 class="text-2xl font-bold">8</h3>
+                        </div>
+                        <i class="fas fa-wallet text-3xl text-purple-500 opacity-20"></i>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-sm text-red-400"><i class="fas fa-arrow-down mr-1"></i> 5% od wczoraj</p>
+                    </div>
+                </div>
+
+                <div class="card stat-card p-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-slate-400 mb-1">Aktywni klienci</p>
+                            <h3 class="text-2xl font-bold">42</h3>
+                        </div>
+                        <i class="fas fa-heartbeat text-3xl text-red-500 opacity-20"></i>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-sm text-green-400"><i class="fas fa-arrow-up mr-1"></i> 15% od wczoraj</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="card p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-lg">Statystyki odwiedzin</h3>
+                        <select class="select-dropdown text-sm" id="visits-period">
+                            <option value="7">Ostatnie 7 dni</option>
+                            <option value="30">Ostatnie 30 dni</option>
+                            <option value="90">Ostatnie 90 dni</option>
+                        </select>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="visitsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-lg">Rozkład odwiedzin</h3>
+                        <select class="select-dropdown text-sm" id="visits-distribution">
+                            <option value="hours">Według godzin</option>
+                            <option value="days">Według dni tygodnia</option>
+                        </select>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-kraje mb-8">
+                <h1>Rozkład użytkowników według kraju</h1>
+
+                <div class="chart-container">
+                    <canvas id="countryChart"></canvas>
+                    <div id="loading" class="loading">
+                        <i class="fas fa-circle-notch fa-spin"></i> Ładowanie danych...
+                    </div>
+                </div>
+
+                <div class="text-center text-slate-400 text-sm mt-4">
+                    Dane aktualne na: <span id="currentDate" class="font-medium"></span>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">Ostatnie transakcje</h3>
+                    <button class="btn-primary px-4 py-2 rounded text-sm flex items-center">
+                        <i class="fas fa-list mr-2"></i> Zobacz wszystkie
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-slate-400">
+                                <th class="pb-3 pr-4">ID</th>
+                                <th class="pb-3 pr-4">Klient</th>
+                                <th class="pb-3 pr-4">Usługa</th>
+                                <th class="pb-3 pr-4">Data</th>
+                                <th class="pb-3 pr-4">Kwota</th>
+                                <th class="pb-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-t border-slate-700 hover:bg-slate-700/50 transition-colors">
+                                <td class="py-3 pr-4 font-mono">#TRX-001</td>
+                                <td class="py-3 pr-4">Jan Kowalski</td>
+                                <td class="py-3 pr-4">Pakiet Premium (3 miesiące)</td>
+                                <td class="py-3 pr-4">2025-06-15 14:30</td>
+                                <td class="py-3 pr-4 font-medium">400 zł</td>
+                                <td class="py-3">
+                                    <span class="px-2 py-1 rounded-full text-xs bg-green-900 text-green-300">Zakończone</span>
+                                </td>
+                            </tr>
+                            <tr class="border-t border-slate-700 hover:bg-slate-700/50 transition-colors">
+                                <td class="py-3 pr-4 font-mono">#TRX-002</td>
+                                <td class="py-3 pr-4">Anna Nowak</td>
+                                <td class="py-3 pr-4">Konsultacja indywidualna</td>
+                                <td class="py-3 pr-4">2025-06-14 10:15</td>
+                                <td class="py-3 pr-4 font-medium">150 zł</td>
+                                <td class="py-3">
+                                    <span class="px-2 py-1 rounded-full text-xs bg-green-900 text-green-300">Zakończone</span>
+                                </td>
+                            </tr>
+                            <tr class="border-t border-slate-700 hover:bg-slate-700/50 transition-colors">
+                                <td class="py-3 pr-4 font-mono">#TRX-003</td>
+                                <td class="py-3 pr-4">Piotr Wiśniewski</td>
+                                <td class="py-3 pr-4">Pakiet Standard (1 miesiąc)</td>
+                                <td class="py-3 pr-4">2025-06-14 18:45</td>
+                                <td class="py-3 pr-4 font-medium">200 zł</td>
+                                <td class="py-3">
+                                    <span class="px-2 py-1 rounded-full text-xs bg-yellow-900 text-yellow-300">W trakcie</span>
+                                </td>
+                            </tr>
+                            <tr class="border-t border-slate-700 hover:bg-slate-700/50 transition-colors">
+                                <td class="py-3 pr-4 font-mono">#TRX-004</td>
+                                <td class="py-3 pr-4">Marta Lewandowska</td>
+                                <td class="py-3 pr-4">Plan treningowy</td>
+                                <td class="py-3 pr-4">2025-06-13 09:20</td>
+                                <td class="py-3 pr-4 font-medium">120 zł</td>
+                                <td class="py-3">
+                                    <span class="px-2 py-1 rounded-full text-xs bg-green-900 text-green-300">Zakończone</span>
+                                </td>
+                            </tr>
+                            <tr class="border-t border-slate-700 hover:bg-slate-700/50 transition-colors">
+                                <td class="py-3 pr-4 font-mono">#TRX-005</td>
+                                <td class="py-3 pr-4">Krzysztof Wójcik</td>
+                                <td class="py-3 pr-4">Pakiet Premium (6 miesięcy)</td>
+                                <td class="py-3 pr-4">2025-06-12 16:10</td>
+                                <td class="py-3 pr-4 font-medium">700 zł</td>
+                                <td class="py-3">
+                                    <span class="px-2 py-1 rounded-full text-xs bg-red-900 text-red-300">Anulowane</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div id="statistics" class="tab-content">
+            <div class="card p-6 mb-6">
+                <h3 class="font-bold text-lg mb-6">Statystyki odwiedzin</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="card p-4">
+                        <p class="text-sm text-slate-400 mb-2">Dzisiaj</p>
+                        <div class="flex items-end justify-between">
+                            <h4 class="text-2xl font-bold" id="today-stat">0</h4>
+                            <span class="text-green-400 text-sm"><i class="fas fa-arrow-up mr-1"></i> 12%</span>
+                        </div>
+                    </div>
+                    <div class="card p-4">
+                        <p class="text-sm text-slate-400 mb-2">W tym tygodniu</p>
+                        <div class="flex items-end justify-between">
+                            <h4 class="text-2xl font-bold" id="week-stat">0</h4>
+                            <span class="text-green-400 text-sm"><i class="fas fa-arrow-up mr-1"></i> 8%</span>
+                        </div>
+                    </div>
+                    <div class="card p-4">
+                        <p class="text-sm text-slate-400 mb-2">W tym miesiącu</p>
+                        <div class="flex items-end justify-between">
+                            <h4 class="text-2xl font-bold" id="month-stat">0</h4>
+                            <span class="text-red-400 text-sm"><i class="fas fa-arrow-down mr-1"></i> 3%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="card p-6">
+                        <h4 class="font-bold text-lg mb-4">Najpopularniejsze kraje</h4>
+                        <div class="h-64">
+                            <canvas id="countriesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card p-6">
+                        <h4 class="font-bold text-lg mb-4">Urządzenia użytkowników</h4>
+                        <div class="h-64">
+                            <canvas id="devicesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visits Log Tab -->
+        <div id="visits-log" class="tab-content">
+            <div class="card p-6 mb-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">Log odwiedzin</h3>
+                    <div class="flex">
+                        <button id="refresh-visits" class="btn-primary px-4 py-2 rounded text-sm mr-3 flex items-center">
+                            <i class="fas fa-sync-alt mr-2"></i> Odśwież
+                        </button>
+                        <button id="clear-log" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm flex items-center transition-colors">
+                            <i class="fas fa-trash-alt mr-2"></i> Wyczyść log
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <div class="flex flex-wrap gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-1">Filtruj po dacie</label>
+                            <input type="date" id="date-filter" class="filter-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-1">Filtruj po IP</label>
+                            <input type="text" id="ip-filter" placeholder="Wpisz adres IP" class="filter-input">
+                        </div>
+                        <div class="self-end">
+                            <button id="apply-filters" class="btn-primary px-4 py-2 rounded text-sm flex items-center">
+                                <i class="fas fa-filter mr-2"></i> Zastosuj filtry
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-slate-400">
+                                <th class="pb-3 pr-4">Data i godzina</th>
+                                <th class="pb-3 pr-4">Adres IP</th>
+                                <th class="pb-3 pr-4">Kraj</th>
+                                <th class="pb-3 pr-4">Przeglądarka</th>
+                                <th class="pb-3">Urządzenie</th>
+                            </tr>
+                        </thead>
+                        <tbody id="visits-log-body">
+                            <tr class="border-t border-slate-700">
+                                <td colspan="5" class="text-center py-8 text-slate-400">
+                                    <i class="fas fa-spinner fa-spin mr-2"></i> Ładowanie danych...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-between items-center mt-4 text-sm text-slate-400">
+                    <div>Wyświetlono <span id="shown-count">0</span> z <span id="total-count">0</span> rekordów</div>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-slate-700 rounded disabled:opacity-50" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="px-3 py-1 bg-slate-700 rounded hover:bg-slate-600">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Załóż, że Twoje HTML ma w `<body>` co najmniej takie elementy: -->
+<!--
+  <div class="stat-card">
+    <h3 id="today-visits">…</h3>
+    <p id="today-change">Ładowanie…</p>
+  </div>
+  <canvas id="visitsChart"></canvas>
+  <canvas id="distributionChart"></canvas>
+  <canvas id="countryChart"></canvas>
+-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+  // Ścieżka aktualnej strony
+  const currentPath = window.location.pathname;
+
+  // Pobierz wszystkie linki z sidebara
+  const links = document.querySelectorAll("#sidebar .nav-link");
+
+  links.forEach(link => {
+    const linkPath = new URL(link.href).pathname;
+
+    // Sprawdzenie czy link pasuje do aktualnej strony
+    if (linkPath === currentPath) {
+      link.classList.add("active");
+    }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 1) Odpalamy wszystkie fetch’e:
+  updateTodayVisits();
+  updateVisitsTimeline(7);
+  updateDistribution('hours');
+  updateCountryStats();
+
+  // 2) Zakładam, że masz jakiś mechanizm do przełączania tabów:
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab; // np. "visits", "distribution", "countries"
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
+  // 3) Logowanie wizyty admina
+  fetch('/log_visit').catch(console.warn);
+});
+
+
+/** DZIŚ / ZMIANA W UŻYTKOWNIKACH */
+async function updateTodayVisits() {
+  try {
+    const res = await fetch('/today_visits');
+    if (!res.ok) throw 'HTTP ' + res.status;
+    const data = await res.json();
+    // Łączna liczba (nowi + powracający)
+    const totalToday = data.today_new_users + data.today_returning_users;
+    document.getElementById('today-visits').textContent      = totalToday;
+    document.getElementById('today-change').textContent      =
+      data.change >= 0
+        ? `↑ ${data.change} vs wczoraj`
+        : `↓ ${Math.abs(data.change)} vs wczoraj`;
+  } catch (e) {
+    console.error('updateTodayVisits:', e);
+    document.getElementById('today-change').textContent = 'Błąd ładowania';
+  }
+}
+
+
+/** WYKRES: NOWI vs POWRACAJĄCY NA OŚCI CZASU */
+let visitsChartInstance = null;
+async function updateVisitsTimeline(periodDays) {
+  try {
+    const res = await fetch(`/api/visit_stats?period=${periodDays}`);
+    if (!res.ok) throw 'HTTP ' + res.status;
+    const { labels, new_users, returning_users } = await res.json();
+
+    const ctx = document.getElementById('visitsChart').getContext('2d');
+    if (visitsChartInstance) visitsChartInstance.destroy();
+    visitsChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Nowi',
+            data: new_users,
+            fill: false,
+            tension: 0.3
+          },
+          {
+            label: 'Powracający',
+            data: returning_users,
+            fill: false,
+            tension: 0.3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { display: true },
+          y: { beginAtZero: true }
+        },
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  } catch (e) {
+    console.error('updateVisitsTimeline:', e);
+  }
+}
+
+
+/** WYKRES: ROZKŁAD WIZYT (GODZINY / DNI) */
+let distributionChartInstance = null;
+async function updateDistribution(type = 'hours') {
+  try {
+    const res = await fetch(`/api/visit_distribution?type=${type}`);
+    if (!res.ok) throw 'HTTP ' + res.status;
+    const { labels, values } = await res.json();
+
+    const ctx = document.getElementById('distributionChart').getContext('2d');
+    if (distributionChartInstance) distributionChartInstance.destroy();
+    distributionChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'Liczba wizyt', data: values }] },
+      options: {
+        responsive: true,
+        scales: {
+          x: { ticks: { autoSkip: false } },
+          y: { beginAtZero: true }
+        },
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: type === 'hours' ? 'Rozkład godzinowy' : 'Rozkład według dni'
+          }
+        }
+      }
+    });
+  } catch (e) {
+    console.error('updateDistribution:', e);
+  }
+}
+
+
+/** WYKRES: KRAJE */
+let countryChartInstance = null;
+async function updateCountryStats() {
+  try {
+    const res = await fetch('/api/visit_countries');
+    if (!res.ok) throw 'HTTP ' + res.status;
+    const data = await res.json();
+    const labels = Object.keys(data);
+    const values = Object.values(data);
+
+    const ctx = document.getElementById('countryChart').getContext('2d');
+    if (countryChartInstance) countryChartInstance.destroy();
+    countryChartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{ data: values, backgroundColor: generateBluePalette(labels.length) }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'right' } },
+        cutout: '50%'
+      }
+    });
+  } catch (e) {
+    console.error('updateCountryStats:', e);
+  }
+}
+// Pomocnicza paleta
+function generateBluePalette(n) {
+  const p = [];
+  for (let i = 0; i < n; i++) {
+    const hue = 210;
+    const sat = 60 + Math.round(30 * (i / n));
+    const light = 40 + Math.round(30 * (i / n));
+    p.push(`hsl(${hue}, ${sat}%, ${light}%)`);
+  }
+  return p;
+}
+</script>
+
+</body>
+</html>

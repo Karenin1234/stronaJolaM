@@ -1,0 +1,70 @@
+<style>
+
+
+
+.sidebar {
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-blue);
+        }
+</style>
+
+
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <div class="sidebar w-64 bg-slate-900 text-white p-4 flex flex-col">
+        <div class="flex items-center mb-8">
+            <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center mr-3">
+                <i class="fas fa-dumbbell text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-xl">Jolanta Miszczak</h1>
+                <p class="text-sm text-blue-300">Trener Personalny</p>
+            </div>
+        </div>
+
+        <nav class="flex-1">
+            <ul class="space-y-2">
+                <li>
+                    <a href="panel.html" class="sidebar-item flex items-center p-3 rounded-lg transition" data-tab="dashboard">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="panel-transakcje.html" class="sidebar-item flex items-center p-3 rounded-lg transition" data-tab="transactions">
+                        <i class="fas fa-receipt mr-3"></i>
+                        <span>Transakcje</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="panel_blogi.html" class="sidebar-item flex items-center p-3 rounded-lg transition" data-tab="posts">
+                        <i class="fas fa-newspaper mr-3"></i>
+                        <span>Posty</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="cennik-panel.html" class="sidebar-item flex items-center p-3 rounded-lg transition" data-tab="pricing">
+                        <i class="fas fa-tags mr-3"></i>
+                        <span>Cennik</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="mt-auto pt-4 border-t border-slate-700">
+            <a href="strona.html" class="flex items-center p-3 rounded-lg hover:bg-slate-800 transition">
+                <i class="fas fa-sign-out-alt mr-3"></i>
+                <span>Powrót do strony głownej</span>
+            </a>
+        </div>
+    </div>
+</div>
